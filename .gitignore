@@ -1,0 +1,14 @@
+obj
+objd
+
+node_modules
+coverage
+docs
+.idea
+.vs
+.tscache
+.ntvs_analysis.dat
+*.js.map
+
+!test/*
+!*-tests.js

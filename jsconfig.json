@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "target": "ES5"
+    },
+    "files": [
+        "lib/Parser.js",
+        "index.js"
+    ]
+}
