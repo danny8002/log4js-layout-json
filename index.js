@@ -1,105 +1,68 @@
 "use strict";
 
-var extract = require("./lib/Parser");
+var extract = require("./lib/Parser").extract;
 var util = require('util');
 var os = require('os');
 
-var now = new Date();
-console.log(now.toISOString());
-console.log(now.getTimezoneOffset());
-console.log(JSON.stringify({ time: now }))
-
-console.log(util.format(" key=%d, key2=%d, key3=%d", 5, undefined, NaN));
-console.log(util.inspect(null));
-console.log(util.inspect(undefined));
-
-var ifaces = os.networkInterfaces();
+function formatValue(fmt, value) {
+    return value;
+}
 
 
-Object.keys(ifaces).forEach(function (ifname) {
-    var alias = 0;
-
-    ifaces[ifname].forEach(function (iface) {
-        if ('IPv4' !== iface.family || iface.internal !== false) {
-            // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-            return;
-        }
-
-        if (alias >= 1) {
-            // this single interface has multiple ipv4 addresses
-            console.log(ifname + ':' + alias, iface.address);
-        } else {
-            // this interface has only one ipv4 adress
-            console.log(ifname, iface.address);
-        }
-        ++alias;
-    });
-});
-
-
-function toObj(args) {
-    var fmt = args[0];
+function toObj(fmt, args) {
     var obj = extract(fmt);
-    var result = { message_: obj.message };
+    var result = { message: obj.message };
 
     for (var i = 0; i < obj.pairs.length; ++i) {
         var pair = obj.pairs[i];
-
-        var arg = args[i + 1];
-
-        result[pair.key] = util.format(pair.value, arg);
+        var arg = args[i];
+        result[pair.key] = formatValue(pair.value, arg);
     }
 
     return result;
 }
 
-function wrapErrorsWithInspect(items) {
-    return items.map(function (item) {
-        if ((item instanceof Error) && item.stack) {
-            return {
-                inspect: function () {
-                    return util.format(item) + '\n' + item.stack;
-                }
-            };
-        } else {
-            return item;
-        }
-    });
+function toDict(array) {
+    var dict = {};
+    array.forEach(function (k) { dict[k] = true; });
+    return dict;
 }
+
 
 function configure(config) {
 
-    var fields = {};
-    (config.includes || ["timestamp", "category", "hostname", "pid"]).forEach(function (f) {
-        fields[f] = true;
-    });
+    var obj2strItems = toDict(config.obj2str || []);
+    var includes = Object.keys(toDict(Object.keys(obj2strItems).concat(config.includes || [])));
+
+
+    var hasHostName = includes.indexOf("hostname") >= 0;
+    var hasPid = includes.indexOf("pid") >= 0;
 
     function format(evt) {
         var output = {};
-        if (fields.timestamp) {
-            output.timestamp = evt.startTime;
-        }
-        if (fields.category) {
-            output.category = evt.categoryName;
-        }
 
-        output.level = evt.level.levelStr;
+        for (var i = 0; i < includes.length; ++i) {
+            var f = includes[i];
+            output[f] = evt[f];
+            if (obj2strItems[f] === true) {
+                output[f] = evt[f].toString();
+            }
+        }
+        // predefined item
 
-        if (fields.hostname) {
+        if (hasHostName && output["hostname"] === undefined) {
             output.hostname = os.hostname();
         }
 
-        if (fields.pid) {
+        if (hasPid && output["pid"] === undefined) {
             output.pid = process.pid;
         }
 
-        if (config.source) {
-            output.source = config.source;
+        if (evt.data && Array.isArray(evt.data) && evt.data.length > 0) {
+            output.data = toObj(evt.data[0], evt.data.slice(1));
         }
 
-        if (evt.data) {
-            output.data = toObj(evt.data);
-        }
+        return output;
     }
 
     // https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/log4js
@@ -109,3 +72,5 @@ function configure(config) {
         return JSON.stringify(output);
     }
 }
+
+exports = module.exports = configure;

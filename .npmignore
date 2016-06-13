@@ -6,6 +6,7 @@
 # Node #
 node_modules/
 coverage/
+examples/
 
 # TypeScript files #
 *.ts
