@@ -1,7 +1,7 @@
 {
   "name": "string-format-json",
   "version": "1.0.0",
-  "description": "Write readable, beautifull, maintainable unstructured string parser with regex",
+  "description": "Format string with json",
   "main": "index.js",
   "repository": {
     "type": "git",
