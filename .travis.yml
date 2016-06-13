@@ -20,6 +20,6 @@ install:
   - npm install
 
 script:
-  - ./node_modules/grunt-cli/bin/grunt build
+  - ./node_modules/grunt-cli/bin/grunt
   
 sudo: false
