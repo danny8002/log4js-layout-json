@@ -1,0 +1,9 @@
+{
+  "name": "log4js-json-example",
+  "version": "1.0.0",
+  "dependencies": {
+    "log4js": "^0.6.36",
+    "log4js-azure-append-blob-appender": "^1.0.1",
+    "string-format-json": "^1.0.0"
+  }
+}

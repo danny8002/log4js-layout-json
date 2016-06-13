@@ -9,6 +9,3 @@ docs
 .tscache
 .ntvs_analysis.dat
 *.js.map
-
-!test/*
-!*-tests.js

@@ -1,0 +1,20 @@
+{
+    "appenders": [
+        {
+            "type": "console",
+            "layout": {
+                "type": "my-json",
+                "includes": [
+                    "startTime",
+                    "categoryName",
+                    "hostname",
+                    "pid"
+                ],
+                "obj2str": [
+                    "level"
+                ]
+            }
+        }
+    ],
+    "replaceConsole": true
+}
