@@ -1,11 +1,11 @@
 {
-  "name": "log4js-layout-json",
+  "name": "string-format-json",
   "version": "1.0.0",
   "description": "Write readable, beautifull, maintainable unstructured string parser with regex",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danny8002/log4js-layout-json.git"
+    "url": "git+https://github.com/danny8002/string-format-json.git"
   },
   "keywords": [
     "log4js",
@@ -16,9 +16,9 @@
   "author": "Zhiyuan Wang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/danny8002/log4js-layout-json/issues"
+    "url": "https://github.com/danny8002/string-format-json/issues"
   },
-  "homepage": "https://github.com/danny8002/log4js-layout-json#readme",
+  "homepage": "https://github.com/danny8002/string-format-json#readme",
   "devDependencies": {
     "assert": "~1.4.1",
     "mocha": "~2.5.3",
