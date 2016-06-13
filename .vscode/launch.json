@@ -29,7 +29,7 @@
             "name": "Run",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/lib/Parser.js",
+            "program": "${workspaceRoot}/index.js",
             "stopOnEntry": false,
             "args": [
             ],

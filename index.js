@@ -2,10 +2,39 @@
 
 var extract = require("./lib/Parser");
 var util = require('util');
+var os = require('os');
+
+var now = new Date();
+console.log(now.toISOString());
+console.log(now.getTimezoneOffset());
+console.log(JSON.stringify({ time: now }))
 
 console.log(util.format(" key=%d, key2=%d, key3=%d", 5, undefined, NaN));
 console.log(util.inspect(null));
 console.log(util.inspect(undefined));
+
+var ifaces = os.networkInterfaces();
+
+
+Object.keys(ifaces).forEach(function (ifname) {
+    var alias = 0;
+
+    ifaces[ifname].forEach(function (iface) {
+        if ('IPv4' !== iface.family || iface.internal !== false) {
+            // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+            return;
+        }
+
+        if (alias >= 1) {
+            // this single interface has multiple ipv4 addresses
+            console.log(ifname + ':' + alias, iface.address);
+        } else {
+            // this interface has only one ipv4 adress
+            console.log(ifname, iface.address);
+        }
+        ++alias;
+    });
+});
 
 
 function toObj(args) {
@@ -38,47 +67,45 @@ function wrapErrorsWithInspect(items) {
     });
 }
 
-function formatLogData(logData) {
-    var data = Array.isArray(logData) ? logData : Array.prototype.slice.call(arguments);
-    return util.format.apply(util, wrapErrorsWithInspect(data));
-}
+function configure(config) {
 
-function jsonLayout(config) {
+    var fields = {};
+    (config.includes || ["timestamp", "category", "hostname", "pid"]).forEach(function (f) {
+        fields[f] = true;
+    });
 
-    function formatter(evt) {
-        var output = {
-            "startTime": evt.startTime,
-            "categoryName": evt.categoryName,
-            "level": evt.level.levelStr
-        };
+    function format(evt) {
+        var output = {};
+        if (fields.timestamp) {
+            output.timestamp = evt.startTime;
+        }
+        if (fields.category) {
+            output.category = evt.categoryName;
+        }
+
+        output.level = evt.level.levelStr;
+
+        if (fields.hostname) {
+            output.hostname = os.hostname();
+        }
+
+        if (fields.pid) {
+            output.pid = process.pid;
+        }
+
+        if (config.source) {
+            output.source = config.source;
+        }
 
         if (evt.data) {
             output.data = toObj(evt.data);
         }
-
-        // if (config.source) {
-        //     output.source = config.source;
-        // }
-
-        // if (output.data) {
-        //     output.data = formatLogData(output.data);
-        // }
-
-        // if (config.include && config.include.length) {
-        //     var newOutput = {};
-        //     config.include.forEach(function (key) {
-        //         if (output.hasOwnProperty(key)) {
-        //             newOutput[key] = output[key];
-        //         }
-        //     });
-        //     return newOutput;
-        // } else {
-        //     return output;
-        // }
     }
 
-    return function layout(data) {
-        var output = formatter(data);
+    // https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/log4js
+    // see Layout/LogEvent definition
+    return function jsonLayout(evt) {
+        var output = format(evt);
         return JSON.stringify(output);
     }
 }
