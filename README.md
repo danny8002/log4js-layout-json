@@ -1,5 +1,7 @@
 # string-format-json
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+[![Build Status](https://travis-ci.org/danny8002/string-format-json.svg?branch=master)](https://travis-ci.org/danny8002/string-format-json)
+[![Coverage Status](https://coveralls.io/repos/github/danny8002/string-format-json/badge.svg?branch=master)](https://coveralls.io/github/danny8002/string-format-json?branch=master)
 Output string with json format
 
 # installation
